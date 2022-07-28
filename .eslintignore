@@ -1,0 +1,7 @@
+**/*.spec.ts
+**/*.test.ts
+test/**.test.ts
+node_modules/*
+dist/**.js
+src/__mocks__/
+.gitlab-ci.yml

@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sucursal {
+  id         String       @id @default(uuid())
+  name       String
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @default(now()) @updatedAt @map("updated_at")
+  deletedAt  DateTime?    @map("deleted_at")
+  bankClient BankClient[]
+
+  @@map("sucursal")
+}
+
+model BankClient {
+  id                 String                   @id @default(uuid())
+  name               String
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @default(now()) @updatedAt @map("updated_at")
+  deletedAt          DateTime?                @map("deleted_at")
+  sucursalId         String?                  @map("sucursal_id")
+  basePrice          Float                    @default(0) @map("base_price")
+  commissions        Float                    @default(0)
+  insurance          Float                    @default(0)
+  services           Float                    @default(0)
+  Sucursal           Sucursal?                @relation(fields: [sucursalId], references: [id])
+  clientTransactions BankClientTransactions[]
+
+  @@map("bank_client")
+}
+
+model BankClientTransactions {
+  id         String     @id @default(uuid())
+  clientId   String     @map("client_id")
+  amount     Float
+  type       String
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @default(now()) @updatedAt @map("updated_at")
+  deletedAt  DateTime?  @map("deleted_at")
+  BankClient BankClient @relation(fields: [clientId], references: [id])
+
+  @@map("bank_client_transactions")
+}

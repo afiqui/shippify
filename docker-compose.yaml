@@ -1,0 +1,47 @@
+version: "3"
+services:
+  app:
+    user: root
+    command: sh -c "npm i && npx prisma generate && npm start"
+    build: .
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://postgres:password@postgres:5432/shippify
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "3000:3000"
+  postgres:
+    container_name: postgres
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    volumes: 
+      - ./postgresdata:/var/lib/postgresql/data
+      - ./src/migrations/dbinit.sql:/docker-entrypoint-initdb.d/dbinit.sql
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shippify
+  # pgadmin:
+  #   container_name: pgadmin
+  #   image: dpage/pgadmin4:6.11
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@pg.com
+  #     PGADMIN_DEFAULT_PASSWORD: password
+  #     PGADMIN_LISTEN_PORT: 8080
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - pgadmin-data:/var/lib/pgadmin
+  #     - ./servers.json:/pgadmin4/servers.json # preconfigured servers/connections
+  #   depends_on:
+  #     - postgres
+volumes:
+    db-data:
+    #pgadmin-data:
